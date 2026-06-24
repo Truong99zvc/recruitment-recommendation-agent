@@ -1,26 +1,26 @@
-# config.py at the project source code root
 import os
 
-PROJECT_SOURCE_ROOT = os.path.dirname(os.path.abspath(__file__))
-SOURCE_LOG_FOLDER_PATH = os.path.join(PROJECT_SOURCE_ROOT, 'log_files')
+from loguru import logger
 
-PROJECT_ROOT = os.path.dirname(PROJECT_SOURCE_ROOT)
+# Base Paths
+PROJECT_SOURCE_ROOT: str = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT: str = os.path.dirname(PROJECT_SOURCE_ROOT)
 
-PROJECT_TEMP_PATH = os.path.join(PROJECT_ROOT, 'temp')
+# Derived Paths
+SOURCE_LOG_FOLDER_PATH: str = os.path.join(PROJECT_SOURCE_ROOT, "log_files")
+USER_PREFERENCES_PATH: str = os.path.join(PROJECT_SOURCE_ROOT, "user_preferences")
+PROJECT_TEMP_PATH: str = os.path.join(PROJECT_ROOT, "temp")
+PROJECT_TEST_ROOT: str = os.path.join(PROJECT_ROOT, "test")
 
-USER_PREFERENCES_PATH = os.path.join(PROJECT_SOURCE_ROOT, 'user_preferences')
-PROJECT_TEST_ROOT = os.path.join(PROJECT_ROOT, 'test')
 
-# Check if the log folder exists, and if not, create it
-if not os.path.exists(SOURCE_LOG_FOLDER_PATH):
-    os.makedirs(SOURCE_LOG_FOLDER_PATH)
-    print(f"Created log folder at: {SOURCE_LOG_FOLDER_PATH}")
+def _ensure_dir_exists(path: str, dir_name: str) -> None:
+    """Ensure a directory exists, creating it and logging if necessary."""
+    if not os.path.exists(path):
+        os.makedirs(path, exist_ok=True)
+        logger.debug(f"Created {dir_name} folder at: {path}")
 
-#create user prefernces folder if it does not exist
-if not os.path.exists(USER_PREFERENCES_PATH):
-    os.makedirs(USER_PREFERENCES_PATH)
-    print(f"Created user preferences folder at: {USER_PREFERENCES_PATH}")
 
-if not os.path.exists(PROJECT_TEMP_PATH):
-    os.makedirs(PROJECT_TEMP_PATH)
-    print(f"Created temp folder at: {PROJECT_TEMP_PATH}")
+# Initialize necessary directories
+_ensure_dir_exists(SOURCE_LOG_FOLDER_PATH, "log")
+_ensure_dir_exists(USER_PREFERENCES_PATH, "user preferences")
+_ensure_dir_exists(PROJECT_TEMP_PATH, "temp")
