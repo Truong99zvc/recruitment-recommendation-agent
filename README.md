@@ -30,6 +30,33 @@ Both approaches yield similar performance, but future scalability improvements w
 
 ---
 
+## 📂 Project Structure
+
+```text
+recruitment-recommendation-agent/
+│
+├── jobber/                   # Standard Agent Implementation
+│   ├── core/                 # Core logic (Orchestrator, memory, prompts)
+│   ├── user_preferences/     # Target job preferences and resume settings
+│   ├── __main__.py           # CLI entry point
+│   └── config.py             # Path and environment configuration
+│
+├── jobber_fsm/               # Finite State Machine Agent Implementation
+│   ├── core/                 # FSM logic (Planner, Browser Agents)
+│   ├── config/               # Configuration settings
+│   └── __main__.py           # FSM CLI entry point
+│
+├── test/                     # Evaluation and testing suite
+│   └── tests_processor.py    # Test orchestrator for agents
+│
+├── pyproject.toml            # Poetry dependencies and metadata
+├── requirements.txt          # Fallback pip requirements
+├── .pre-commit-config.yaml   # Pre-commit hooks configuration
+└── .env.example              # Example environment variables
+```
+
+---
+
 ## 🚀 Getting Started
 
 ### Prerequisites
