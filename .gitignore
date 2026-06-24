@@ -1,7 +1,37 @@
-.env
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
 .venv/
-__pycache__
+venv/
+env/
+
+# Environment
+.env
+.env.local
+
+# Logs and outputs
 log_files/
 logs/
-.DS_STORE
 results/
+temp/
+jobber_fsm_*.log
+jobber_*.log
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Testing
+.pytest_cache/
