@@ -1,103 +1,133 @@
-# sentient
+# 🤖 Jobber - Autonomous Recruitment Recommendation Agent
 
-this agent is based on our upcoming open-source framework [sentient](https://github.com/sentient-engineering/sentient) to help devs instantly build fast & reliable AI agents that can control browsers autonomously in 3 lines of code. checkout the beta sentient package on [pypi](https://pypi.org/project/sentient/) & our experiemnts to advance oss web navigating agents in the [agent-q repository](https://github.com/sentient-engineering/agent-q)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org)
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Sentient Framework](https://img.shields.io/badge/Powered%20by-Sentient-orange.svg)](https://github.com/sentient-engineering/sentient)
 
-# jobber - apply to relevant jobs on internet autonomously
+Jobber is an intelligent AI agent that searches and applies for jobs on your behalf by autonomously controlling your web browser. Simply provide your resume and preferences, and let the agent do the heavy lifting in the background.
 
-jobber is an ai agent that searches and applies for jobs on your behalf by controlling your browser. put in your resume and preferences and it does the work in background.
+This project is built upon the upcoming open-source framework [Sentient](https://github.com/sentient-engineering/sentient), which enables developers to instantly build fast & reliable AI agents capable of autonomous browser control.
 
-### demo
+> **Note:** Check out the beta `sentient` package on [PyPI](https://pypi.org/project/sentient/) and explore our experiments advancing OSS web-navigating agents in the [agent-q repository](https://github.com/sentient-engineering/agent-q).
 
-checkout this [loom video](https://www.loom.com/share/2037ee751b4f491c8d2ffd472d8223bd?sid=53d08a9f-5a9b-4388-ae69-445032b31738) for a quick demo
+---
 
-### jobber and jobber_fsm
+## 🎥 Demo
 
-you might notice two separate implementations of jobber in the repo. `jobber` folder contains a simpler approach to implementing multi-agent conversation required between a planner and a browser agent.
+Check out this [Loom Video](https://www.loom.com/share/2037ee751b4f491c8d2ffd472d8223bd?sid=53d08a9f-5a9b-4388-ae69-445032b31738) for a quick demonstration of Jobber in action!
 
-the `jobber_fsm` folder contains another approach based on [finite state machines](https://github.com/sentient-engineering/multi-agent-fsm). there are slight nuances and both result in similar level or performace. however, the fsm approach is more scalable, and we will be doing further improvements in it.
+---
 
-the downside of fsm agent is that it is dependent on [structured output](https://openai.com/index/introducing-structured-outputs-in-the-api/) from open ai. so you can't reliably use cheaper models like gpt4o-mini or other oss models which is possible in `jobber`
+## 🏗️ Architecture
 
-### setup
+The repository features two distinct implementations of the Jobber agent:
 
-1. we recommend installing poetry before proceeding with the next steps. you can install poetry using these [instructions](https://python-poetry.org/docs/#installation)
+- **`jobber/` (Standard)**: A straightforward approach to implementing multi-agent conversation between a planner and a browser agent. It supports various OSS models and cost-effective alternatives like `gpt-4o-mini`.
+- **`jobber_fsm/` (Finite State Machine)**: An advanced approach based on [Multi-Agent FSM](https://github.com/sentient-engineering/multi-agent-fsm). While highly scalable and robust, it currently relies on OpenAI's [Structured Outputs](https://openai.com/index/introducing-structured-outputs-in-the-api/), making it less compatible with generic OSS models compared to the standard version.
 
-2. install dependencies
+Both approaches yield similar performance, but future scalability improvements will be focused primarily on the FSM implementation.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+1. **Python 3.8+**
+2. **Poetry**: We strongly recommend using Poetry for dependency management. Install it following [these instructions](https://python-poetry.org/docs/#installation).
+3. **Google Chrome**: Ensure Chrome is installed on your machine.
+
+### Installation
+
+Clone the repository and install the dependencies:
 
 ```bash
+git clone https://github.com/Truong99zvc/recruitment-recommendation-agent.git
+cd recruitment-recommendation-agent
 poetry install
 ```
 
-3. start chrome in dev mode - in a seaparate terminal, use the command to start a chrome instance and do necesssary logins to job websites like linkedin/ wellfound, etc.
+### Browser Setup (Dev Mode)
 
-for mac, use command -
+To allow the agent to control your browser and reuse your active sessions (like logged-in states for LinkedIn or Wellfound), you need to start Chrome with remote debugging enabled on a separate terminal.
 
+**macOS:**
 ```bash
 sudo /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
 ```
 
-for linux -
-
+**Linux:**
 ```bash
 google-chrome --remote-debugging-port=9222
 ```
 
-for windows -
-
-```bash
+**Windows:**
+```powershell
 "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222
 ```
 
-4. set up env - add openai and [langsmith](https://smith.langchain.com) keys to .env file. you can refer .env.example. currently adding langsmith is required but if you do not want to use it for tracing - then you can comment the line `litellm.success_callback = ["langsmith"]` in the `./jobber_fsm/core/agent/base.py` file.
+### Environment Configuration
 
-5. update your preferences in the `user_preferences.txt` file in the folder of agent that you are running (jobber/ jobber_fsm). provide the local file path to your resume in this file itself for the agent to be able to upload it.
+1. Copy the example `.env` file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Open `.env` and add your **OpenAI API Key** and **Langsmith API Key**. 
+   > *Note: Langsmith tracing is required by default. If you prefer to run without it, comment out the line `litellm.success_callback = ["langsmith"]` inside `./jobber_fsm/core/agent/base.py`.*
 
-6. run the agent - jobber_fsm or jobber
+### User Preferences
 
-```bash
-python -u -m jobber_fsm
-```
+Update your job preferences and details inside the `user_preferences.txt` file located in the respective agent folder (`jobber/` or `jobber_fsm/`). 
+Make sure to include the local, absolute file path to your resume within this file so the agent can upload it automatically during applications.
 
-or
+---
 
-```bash
-python -u -m jobber
-```
+## 💻 Usage
 
-6. enter your task. sample task -
-
-```bash
-apply for a backend engineer role based in helsinki on linkedin
-```
-
-### Run evals
-
-1. For Jobber
+You can run either the Standard or the FSM agent via the newly added CLI interface:
 
 ```bash
- python -m test.tests_processor --orchestrator_type vanilla
+# Run the FSM Agent
+python -m jobber_fsm --verbose
+
+# OR Run the Standard Agent
+python -m jobber --verbose
 ```
 
-2. For Jobber FSM
+Once the orchestrator starts, enter your task prompt. For example:
+> *"Apply for a backend engineer role based in Helsinki on LinkedIn."*
 
+---
+
+## 🧪 Evaluation
+
+To run evaluations on the agent's performance, use the provided test processor scripts:
+
+**For Standard Jobber:**
 ```bash
- python -m test.tests_processor --orchestrator_type fsm
+python -m test.tests_processor --orchestrator_type vanilla
 ```
 
-#### citations
-
-a bunch of amazing work in the space has inspired this. see [webvoyager](https://arxiv.org/abs/2401.13919), [agent-e](https://arxiv.org/abs/2407.13032)
-
+**For Jobber FSM:**
+```bash
+python -m test.tests_processor --orchestrator_type fsm
 ```
+
+---
+
+## 📚 Acknowledgements & Citations
+
+This project is deeply inspired by phenomenal work in the AI space. Please refer to [WebVoyager](https://arxiv.org/abs/2401.13919) and [Agent-E](https://arxiv.org/abs/2407.13032).
+
+```bibtex
 @article{he2024webvoyager,
   title={WebVoyager: Building an End-to-End Web Agent with Large Multimodal Models},
   author={He, Hongliang and Yao, Wenlin and Ma, Kaixin and Yu, Wenhao and Dai, Yong and Zhang, Hongming and Lan, Zhenzhong and Yu, Dong},
   journal={arXiv preprint arXiv:2401.13919},
   year={2024}
 }
-```
 
-```
 @misc{abuelsaad2024-agente,
       title={Agent-E: From Autonomous Web Navigation to Foundational Design Principles in Agentic Systems},
       author={Tamer Abuelsaad and Deepak Akkil and Prasenjit Dey and Ashish Jagmohan and Aditya Vempaty and Ravi Kokku},
@@ -108,3 +138,4 @@ a bunch of amazing work in the space has inspired this. see [webvoyager](https:/
       url={https://arxiv.org/abs/2407.13032},
 }
 ```
+
