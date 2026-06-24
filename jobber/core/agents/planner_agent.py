@@ -1,5 +1,8 @@
 from datetime import datetime
 from string import Template
+from typing import Any, Dict
+
+from loguru import logger
 
 from jobber.core.agents.base import BaseAgent
 from jobber.core.agents.browser_nav_agent import BrowserNavAgent
@@ -9,13 +12,15 @@ from jobber.core.skills.get_screenshot import get_screenshot
 
 
 class PlannerAgent(BaseAgent):
-    def __init__(self):
-        ltm = self.__get_ltm()
+    def __init__(self) -> None:
+        user_ltm: str = self.__get_ltm()
         system_prompt: str = LLM_PROMPTS["PLANNER_AGENT_PROMPT"]
 
         # Add user ltm to system prompt
-        ltm = "\n" + ltm
-        system_prompt = Template(system_prompt).substitute(basic_user_information=ltm)
+        user_ltm_formatted = "\n" + user_ltm
+        system_prompt = Template(system_prompt).substitute(
+            basic_user_information=user_ltm_formatted
+        )
 
         # Add today's day & date to the system prompt
         today = datetime.now()
@@ -27,13 +32,13 @@ class PlannerAgent(BaseAgent):
         super().__init__(system_prompt=system_prompt)
         self.browser_agent = BrowserNavAgent(self)
 
-    async def process_query(self, query: str):
-        response = await super().process_query(query)
+    async def process_query(self, query: str) -> str:
+        response: Dict[str, Any] = await super().process_query(query)
 
         while True:
             # If we get terminate right away from planner
             if response.get("terminate", False):
-                return response["content"]
+                return str(response["content"])
 
             # Process the browser response
             processed_browser_response = await self.browser_agent.process_query(
@@ -41,9 +46,7 @@ class PlannerAgent(BaseAgent):
             )
 
             if processed_browser_response.get("terminate", False):
-                return processed_browser_response[
-                    "content"
-                ]  # Final response to SystemOrchestrator
+                return str(processed_browser_response["content"])
 
             # Update the response for the next iteration
             response = processed_browser_response
@@ -51,8 +54,8 @@ class PlannerAgent(BaseAgent):
         # This line should never be reached, but it's good practice to have it
         return "Error: Unexpected end of process_query"
 
-    async def receive_browser_message(self, message: str):
-        print("recieved browser message")
+    async def receive_browser_message(self, message: str) -> Dict[str, Any]:
+        logger.debug("Received browser message")
         screenshot = await get_screenshot()
         processed_helper_response = await self.generate_reply(
             [
@@ -68,13 +71,12 @@ class PlannerAgent(BaseAgent):
                             "image_url": {"url": f"{screenshot}"},
                         },
                     ],
-                    # "content": f"Helper response: {message}",
                 }
             ],
             self.browser_agent,
         )
 
-        return processed_helper_response  # Return the response to the process_query funciton's while True loop
+        return processed_helper_response
 
-    def __get_ltm(self):
+    def __get_ltm(self) -> str:
         return ltm.get_user_ltm()
