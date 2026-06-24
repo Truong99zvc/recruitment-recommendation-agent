@@ -4,6 +4,7 @@ from typing import Dict
 
 from colorama import Fore, init
 from dotenv import load_dotenv
+from loguru import logger
 
 from jobber_fsm.core.agent.base import BaseAgent
 from jobber_fsm.core.models.models import (
@@ -33,9 +34,9 @@ class Orchestrator:
         self.shutdown_event = asyncio.Event()
 
     async def start(self):
-        print("Starting orchestrator")
+        logger.info("Starting orchestrator")
         await self.playwright_manager.async_initialize(eval_mode=self.eval_mode)
-        print("Browser started and ready")
+        logger.info("Browser started and ready")
 
         if not self.eval_mode:
             await self._command_loop()
@@ -51,7 +52,7 @@ class Orchestrator:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                print(f"An error occurred: {e}")
+                logger.error(f"An error occurred in command loop: {e}")
 
     async def _get_user_input(self):
         return await asyncio.get_event_loop().run_in_executor(
@@ -69,7 +70,7 @@ class Orchestrator:
                 current_task=None,
                 final_response=None,
             )
-            print(f"Executing command {self.memory.objective}")
+            logger.info(f"Executing command: {self.memory.objective}")
             while self.memory.current_state != State.COMPLETED:
                 await self._handle_state()
             self._print_final_response()
@@ -79,7 +80,7 @@ class Orchestrator:
             else:
                 return
         except Exception as e:
-            print(f"Error executing the command {self.memory.objective}: {e}")
+            logger.error(f"Error executing the command {self.memory.objective}: {e}")
 
     def run(self) -> Memory:
         while self.memory.current_state != State.COMPLETED:
@@ -162,7 +163,7 @@ class Orchestrator:
         self.memory.current_state = State.PLAN
 
     async def shutdown(self):
-        print("Shutting down orchestrator!")
+        logger.info("Shutting down orchestrator!")
         self.shutdown_event.set()
         await self.playwright_manager.stop_playwright()
 
