@@ -35,24 +35,44 @@ Both approaches yield similar performance, but future scalability improvements w
 ```text
 recruitment-recommendation-agent/
 │
-├── jobber/                   # Standard Agent Implementation
-│   ├── core/                 # Core logic (Orchestrator, memory, prompts)
-│   ├── user_preferences/     # Target job preferences and resume settings
-│   ├── __main__.py           # CLI entry point
-│   └── config.py             # Path and environment configuration
+├── jobber/                             # Standard Agent Implementation
+│   ├── core/                           # Core business logic
+│   │   ├── agents/                     # Base, Planner, and Browser Navigation agents
+│   │   ├── memory/                     # Long-term memory (LTM) & context management
+│   │   ├── skills/                     # Actionable skills (e.g., getting screenshots, extracting URLs)
+│   │   ├── playwright_manager.py       # Browser & Playwright session controller
+│   │   ├── prompts.py                  # LLM Prompt templates for the standard agent
+│   │   └── system_orchestrator.py      # Main loop orchestrating planner and browser agents
+│   ├── user_preferences/               # Target job preferences and resume settings
+│   ├── utils/                          # Helper functions (logging setup, path parsing)
+│   ├── __main__.py                     # CLI entry point for the standard agent
+│   └── config.py                       # Base configuration and path variables
 │
-├── jobber_fsm/               # Finite State Machine Agent Implementation
-│   ├── core/                 # FSM logic (Planner, Browser Agents)
-│   ├── config/               # Configuration settings
-│   └── __main__.py           # FSM CLI entry point
+├── jobber_fsm/                         # Finite State Machine Agent Implementation
+│   ├── core/                           # FSM core logic
+│   │   ├── agent/                      # State-specific agents (Planner, BrowserNav)
+│   │   ├── memory/                     # FSM memory state and transition tracking
+│   │   ├── models/                     # Pydantic schemas defining FSM states and IO models
+│   │   ├── orchestrator/               # FSM orchestrator running the state machine loop
+│   │   ├── prompts/                    # Advanced prompts using Structured Outputs
+│   │   ├── skills/                     # FSM-specific skill utilities
+│   │   └── web_driver/                 # Isolated Playwright manager for FSM
+│   ├── config/                         # Configuration settings
+│   ├── user_preferences/               # FSM-specific preferences and resume
+│   ├── utils/                          # FSM helper scripts
+│   └── __main__.py                     # FSM CLI entry point
 │
-├── test/                     # Evaluation and testing suite
-│   └── tests_processor.py    # Test orchestrator for agents
+├── test/                               # Evaluation and testing suite
+│   ├── tests_processor.py              # Main test execution orchestrator
+│   └── ...                             # Specific test cases and mocks
 │
-├── pyproject.toml            # Poetry dependencies and metadata
-├── requirements.txt          # Fallback pip requirements
-├── .pre-commit-config.yaml   # Pre-commit hooks configuration
-└── .env.example              # Example environment variables
+├── pyproject.toml                      # Poetry dependencies and metadata
+├── requirements.txt                    # Fallback pip requirements
+├── .pre-commit-config.yaml             # Pre-commit hooks configuration (Black, Flake8, isort)
+├── .flake8                             # Linter rules configuration
+├── .isort.cfg                          # Import sorter configuration
+├── .gitignore                          # Standardized ignore rules
+└── .env.example                        # Example environment variables (OpenAI, LangSmith keys)
 ```
 
 ---
